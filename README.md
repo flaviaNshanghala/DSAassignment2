@@ -1,16 +1,27 @@
 # DSAassignment2
 
-FACULTY OF COMPUTING AND INFORMATICS 
-DEPARTMENT OF SOFTWARE ENGINEERING 
-Assignment 2 
-Course Title: Distributed Systems and Applications  
-Course Code: DSA612S  
-Assessment: Second Assignment 
-Released on: 25/09/2024.  
-Due date: 14/10/ 2024 at 11h59AM 
-Total Marks: 100 
-Containerized Microservices with Ballerina and Kafka 
-Description 
+FACULTY OF COMPUTING AND INFORMATICS
+
+DEPARTMENT OF SOFTWARE ENGINEERING
+
+Assignment 2
+
+Course Title: Distributed Systems and Applications
+
+Course Code: DSA612S
+
+Assessment: Second Assignment
+
+Released on: 25/09/2024.
+
+Due date: 14/10/ 2024 at 11h59AM
+
+Total Marks: 100
+
+Containerized Microservices with Ballerina and Kafka
+
+Description:
+
 In this project, we are working on part of a larger logistics system. This system handles 
 requests for package delivery from multiple providers, offering specialized services for 
 different types of shipments, such as standard delivery, express delivery, and international 
