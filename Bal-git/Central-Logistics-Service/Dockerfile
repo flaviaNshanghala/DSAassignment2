@@ -1,4 +1,4 @@
-FROM openjdk:11-jre-slim
+FROM ballerina/ballerina:latest
 WORKDIR /app
-COPY target/central-logistics-service.jar app.jar
-ENTRYPOINT ["java", "-jar", "app.jar"]
+COPY CDS.bal .
+CMD ["bal", "run", "CDS.bal"]
