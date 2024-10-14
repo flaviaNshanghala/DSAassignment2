@@ -1,18 +1,17 @@
-
 import ballerinax/kafka;
-import order_processor.types;
 import ballerina/lang.value;
 import ballerina/log;
+import ballerina/uuid;
 
-configurable string LISTENING_TOPIC = ?;
-configurable string PUBLISH_TOPIC = ?;
+configurable string LISTENING_TOPIC_requests_Standard = "delivery-requests_Standard";
+configurable string PUBLISH_TOPIC_responses_Standard = "delivery-responses_Standard";
 
 
-kafka:Producer kafkaProducer = check new (kafka:DEFAULT_URL);
+kafka:Producer postResponses_Standard = check new (kafka:DEFAULT_URL);
 
 kafka:ConsumerConfiguration consumerConfigs = {
-    groupId: "processing-consumer",
-    topics: [LISTENING_TOPIC],
+    groupId: "processed-requests_Express",
+    topics: [LISTENING_TOPIC_requests_Standard],
     offsetReset: kafka:OFFSET_RESET_EARLIEST,
     pollingInterval: 1
 };
@@ -20,13 +19,11 @@ kafka:ConsumerConfiguration consumerConfigs = {
 listener kafka:Listener kafkaListener = new (kafka:DEFAULT_URL, consumerConfigs);
 
 service kafka:Service on kafkaListener {
-
-   
     remote function onConsumerRecord(kafka:Caller caller, kafka:BytesConsumerRecord[] records) returns error? {
-
-        error? err = from types:Order 'order in check getOrdersFromRecords(records) where 'order.status == types:SUCCESS do {
-            log:printInfo("Sending successful order to " + PUBLISH_TOPIC + " " + 'order.toString());
-            check kafkaProducer->send({ topic: PUBLISH_TOPIC, value: 'order.toString().toBytes()});
+        error? err = from DeliveryRequest 'request in check getOrdersFromRecords(records) where 'request.shipmentType == "Standard" do {
+            DeliveryResponse response = {trackingId: generateTrackingId(),estimatedDeliveryTime: "TBD", status: "Delivered"};
+            log:printInfo("Sending successful order to " + PUBLISH_TOPIC_responses_Standard + " " + response.toString());
+            check postResponses_Standard->send({ topic: PUBLISH_TOPIC_responses_Standard, value: response.toString().toBytes()});
         };
         if err is error {
             log:printError("Unknown error occured ", err);
@@ -35,14 +32,22 @@ service kafka:Service on kafkaListener {
 }
 
 
-function getOrdersFromRecords(kafka:BytesConsumerRecord[] records) returns types:Order[]|error {
-    types:Order[] receivedOrders = [];
+function getOrdersFromRecords(kafka:BytesConsumerRecord[] records) returns DeliveryRequest[]|error {
+    DeliveryRequest[] requests = [];
     foreach kafka:BytesConsumerRecord 'record in records {
         string messageContent = check string:fromBytes('record.value);
         json jsonContent = check value:fromJsonString(messageContent);
         json jsonClone = jsonContent.cloneReadOnly();
-        types:Order receivedOrder = check jsonClone.ensureType(types:Order);
-        receivedOrders.push(receivedOrder);
+        DeliveryRequest request = check jsonClone.ensureType(DeliveryRequest);
+        requests.push(request);
     }
-    return receivedOrders;
+    return requests;
+}
+
+// Define the function to generate a unique tracking ID
+function generateTrackingId() returns string {
+    // Implement a unique ID generation logic here
+    // For simplicity, let's use a random UUID
+    string trackingId = uuid:createRandomUuid();
+    return trackingId;
 }
