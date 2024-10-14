@@ -7,7 +7,7 @@ configurable string LISTENING_TOPIC_requests_Express = "delivery-requests_Expres
 configurable string PUBLISH_TOPIC_responses_Express = "delivery-responses_Express";
 
 
-kafka:Producer postResponses_Standard = check new (kafka:DEFAULT_URL);
+kafka:Producer postResponses_Express = check new (kafka:DEFAULT_URL);
 
 kafka:ConsumerConfiguration consumerConfigs = {
     groupId: "processed-requests_Express",
@@ -23,7 +23,7 @@ service kafka:Service on kafkaListener {
         error? err = from DeliveryRequest 'request in check getDeliveryRequests(records) where 'request.shipmentType == "Express" do {
             DeliveryResponse response = {trackingId: generateTrackingId(),estimatedDeliveryTime: "TBD", status: "Delivered"};
             log:printInfo("Sending successful order to " + PUBLISH_TOPIC_responses_Express + " " + response.toString());
-            check postResponses_Standard->send({ topic: PUBLISH_TOPIC_responses_Express, value: response.toString().toBytes()});
+            check postResponses_Express->send({ topic: PUBLISH_TOPIC_responses_Express, value: response.toString().toBytes()});
         };
         if err is error {
             log:printError("Unknown error occured ", err);
