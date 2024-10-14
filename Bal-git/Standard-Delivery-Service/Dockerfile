@@ -1,4 +1,4 @@
-FROM openjdk:11-jre-slim
+FROM ballerina/ballerina:latest
 WORKDIR /app
-COPY target/standard-delivery-service.jar app.jar
-ENTRYPOINT ["java", "-jar", "app.jar"]
+COPY SDS.bal .
+CMD ["bal", "run", "SDS.bal"]
