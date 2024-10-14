@@ -1,4 +1,4 @@
-FROM openjdk:11-jre-slim
+FROM ballerina/ballerina:latest
 WORKDIR /app
-COPY target/international-delivery-service.jar app.jar
-ENTRYPOINT ["java", "-jar", "app.jar"]
+COPY IDS.bal .
+CMD ["bal", "run", "IDS.bal"]
