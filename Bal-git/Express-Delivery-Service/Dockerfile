@@ -1,4 +1,4 @@
-FROM openjdk:11-jre-slim
+FROM ballerina/ballerina:latest
 WORKDIR /app
-COPY target/express-delivery-service.jar app.jar
-ENTRYPOINT ["java", "-jar", "app.jar"]
+COPY EDS.bal .
+CMD ["bal", "run", "EDS.bal"]
