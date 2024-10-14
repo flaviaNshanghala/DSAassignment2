@@ -1,0 +1,6 @@
+[Central-Logistics-Service]
+LISTENING_TOPIC_requests = "delivery-requests"
+PUBLISH_TOPIC_requests = "delivery-requests"
+
+LISTENING_TOPIC_responses = "delivery-responses"
+PUBLISH_TOPIC_responses = "delivery-requests"

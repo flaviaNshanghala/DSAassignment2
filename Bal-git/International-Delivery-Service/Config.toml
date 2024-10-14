@@ -1,0 +1,3 @@
+[International-Delivery-Service]
+LISTENING_TOPIC_requests = "delivery-requests"
+PUBLISH_TOPIC_responses = "delivery-responses"

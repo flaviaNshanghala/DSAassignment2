@@ -1,0 +1,9 @@
+[[ballerina.auth.users]]
+username="user"
+password="password"
+scopes=["customer"]
+
+[Client]
+TOPIC_requests = "delivery-requests"
+LISTENER_PORT = 9090
+LISTENING_TOPIC_responses = "delivery-requests"
