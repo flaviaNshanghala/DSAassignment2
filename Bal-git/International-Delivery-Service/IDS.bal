@@ -7,7 +7,7 @@ configurable string LISTENING_TOPIC_requests_International = "delivery-requests_
 configurable string PUBLISH_TOPIC_responses_International = "delivery-responses_International";
 
 
-kafka:Producer postResponses_Standard = check new (kafka:DEFAULT_URL);
+kafka:Producer postResponses_International = check new (kafka:DEFAULT_URL);
 
 kafka:ConsumerConfiguration consumerConfigs = {
     groupId: "processed-requests_International",
@@ -23,7 +23,7 @@ service kafka:Service on kafkaListener {
         error? err = from DeliveryRequest 'request in check getDeliveryRequests(records) where 'request.shipmentType == "International" do {
             DeliveryResponse response = {trackingId: generateTrackingId(),estimatedDeliveryTime: "TBD", status: "Delivered"};
             log:printInfo("Sending successful order to " + PUBLISH_TOPIC_responses_International + " " + response.toString());
-            check postResponses_Standard->send({ topic: PUBLISH_TOPIC_responses_International, value: response.toString().toBytes()});
+            check postResponses_International->send({ topic: PUBLISH_TOPIC_responses_International, value: response.toString().toBytes()});
         };
         if err is error {
             log:printError("Unknown error occured ", err);
