@@ -29,7 +29,7 @@ service kafka:Service on kafkaListener {
             check kafkaProducer->send({ topic: PUBLISH_TOPIC, value: 'order.toString().toBytes()});
         };
         if err is error {
-            log:printError("Unknown error occured", err);
+            log:printError("Unknown error occured ", err);
         }
     }
 }
