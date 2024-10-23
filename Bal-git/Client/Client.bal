@@ -4,16 +4,16 @@ import ballerina/log;
 import ballerina/sql;
 import ballerinax/kafka;
 import ballerinax/mysql;
-import ballerinax/mysql.driver as _;
 
 configurable string TOPIC_requests = "delivery-requests";
 configurable int LISTENER_PORT = 9090;
-configurable string LISTENING_TOPIC_responses = "delivery-requests";
+configurable string LISTENING_TOPIC_responses = "delivery-responses";
 
-configurable string host = ?;
-configurable string username = ?;
-configurable string password = ?;
-configurable string databaseName = ?;
+configurable string host = "127.0.0.1";
+configurable string username = "root";
+configurable string password = ""; //your SQL password 
+configurable string databaseName = "delivery_service";
+configurable int port = 3306;
 
 public final mysql:Client databaseClient = check new (host, username, password, databaseName, 3306);
 
@@ -35,7 +35,7 @@ service kafka:Service on ears {
             where 'response.status == "Delivered"
             do {
                 sql:ExecutionResult result = check databaseClient->execute(insert into DeliveryResponse (status, trackingId, estimatedDeliveryTime, preferredTimeSlots) values (${'response.status},  ${'response.trackingId}, ${'response.estimatedDeliveryTime}));
-                int|string? lastInsertId = result.lastInsertId;
+                int|string? lastInsertId = lastInsertId;
         if lastInsertId is int {
             log:printInfo("Recieving successful "+LISTENING_TOPIC_responses+" "+'response.toString());
         } else {
@@ -52,7 +52,7 @@ service / on new http:Listener(LISTENER_PORT) {
     resource function post DeliveryRequest(DeliveryRequest request) returns string|error? {
         check publishDelivery(request);
         sql:ExecutionResult result = check databaseClient->execute(insert into DeliveryRequest (shipmentType, pickupLocation, deliveryLocation, preferredTimeSlots, firstName, lastName, contactNumber) values (${request.shipmentType}, ${request.pickupLocation},${request.deliveryLocation}, ${request.preferredTimeSlots}, ${request.firstName}, ${request.lastName}, ${request.contactNumber}));
-        int|string? lastInsertId = result.lastInsertId;
+        int|string? lastInsertId = lastInsertId;
         if lastInsertId is int {
             return "Message sent to the Kafka topic " + TOPIC_requests + " successfully. By " + request.firstName + " " + request.lastName + ", shipment " + request.shipmentType;
         } else {
