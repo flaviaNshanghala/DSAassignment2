@@ -35,8 +35,8 @@ service kafka:Service on ears {
             where 'response.status == "Delivered"
             do {
                 sql:ExecutionResult result = check databaseClient->execute(insert into DeliveryResponse (status, trackingId, estimatedDeliveryTime, preferredTimeSlots) values (${'response.status},  ${'response.trackingId}, ${'response.estimatedDeliveryTime}));
-                int|string? lastInsertId = lastInsertId;
-        if lastInsertId is int {
+                int|string? lastInsertId = result.lastInsertId;
+        if lastInsertId == lastInsertId {
             log:printInfo("Recieving successful "+LISTENING_TOPIC_responses+" "+'response.toString());
         } else {
             log:printError("Unable to obtain last insert ID");
@@ -52,8 +52,8 @@ service / on new http:Listener(LISTENER_PORT) {
     resource function post DeliveryRequest(DeliveryRequest request) returns string|error? {
         check publishDelivery(request);
         sql:ExecutionResult result = check databaseClient->execute(insert into DeliveryRequest (shipmentType, pickupLocation, deliveryLocation, preferredTimeSlots, firstName, lastName, contactNumber) values (${request.shipmentType}, ${request.pickupLocation},${request.deliveryLocation}, ${request.preferredTimeSlots}, ${request.firstName}, ${request.lastName}, ${request.contactNumber}));
-        int|string? lastInsertId = lastInsertId;
-        if lastInsertId is int {
+        int|string? lastInsertId = result.lastInsertId;
+        if lastInsertId == lastInsertId {
             return "Message sent to the Kafka topic " + TOPIC_requests + " successfully. By " + request.firstName + " " + request.lastName + ", shipment " + request.shipmentType;
         } else {
             return error("Unable to obtain last insert ID");
