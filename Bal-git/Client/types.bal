@@ -2,7 +2,7 @@ type DeliveryRequest record {
     ShipmentType shipmentType;
     string pickupLocation;
     string deliveryLocation;
-    string[] preferredTimeSlots;
+    string preferredTimeSlots;
     string firstName;
     string lastName;
     string contactNumber;
